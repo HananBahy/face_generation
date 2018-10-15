@@ -1,0 +1,31 @@
+def model_opt(d_loss, g_loss, learning_rate, beta1):
+    """
+    Get optimization operations
+    :param d_loss: Discriminator loss Tensor
+    :param g_loss: Generator loss Tensor
+    :param learning_rate: Learning Rate Placeholder
+    :param beta1: The exponential decay rate for the 1st moment in the optimizer
+    :return: A tuple of (discriminator training operation, generator training operation)
+    """
+    # TODO: Implement Function
+    #Get The trainable_variables , split it into G and D  parts
+    t_vars = tf.trainable_variables()     #A list of all variables in the graph
+               #trainables  -------a lsit of all variables in the graph
+   
+    g_vars =[var for var in t_vars  if var.name.startswith('generator')]  #variables of generator
+    #g_vars = [var for var in trainables if var.name.startswith('generator')]
+    d_vars =[var for var in t_vars if var.name.startswith('discriminator')] 
+                      
+           #inside a graph scope 
+    with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
+        g_train_op = tf.train.AdamOptimizer(learning_rate ,beta1).minimize(g_loss ,g_vars)  #for Generator
+        d_train_op =tf.train.AdamOptimizer(learning_rate ,beta1).minimize(d_loss ,d_vars)  #for Discriminator
+    
+    
+    return d_train_op , g_train_op
+
+
+"""
+DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
+"""
+tests.test_model_opt(model_opt, tf)
